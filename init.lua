@@ -1,3 +1,5 @@
+require 'custom.remap'
+
 --[[
 
 =====================================================================
@@ -227,6 +229,35 @@ vim.opt.rtp:prepend(lazypath)
 require('lazy').setup({
   -- NOTE: Plugins can be added with a link (or for a github repo: 'owner/repo' link).
   'tpope/vim-sleuth', -- Detect tabstop and shiftwidth automatically
+  'theprimeagen/harpoon',
+  'mbbill/undotree',
+  'tpope/vim-fugitive',
+  {
+    'windwp/nvim-ts-autotag',
+    ft = { 'javascript', 'javascriptreact', 'typescript', 'typescriptreact', 'html' },
+    config = function()
+      require('nvim-ts-autotag').setup()
+    end,
+  },
+  -- 'nvimtools/none-ls.nvim',
+  -- event = 'VeryLazy'
+  -- {
+  --   'nvim-tree/nvim-tree.luanvim-tree/nvim-tree',
+  --   opts = {
+  --     sort = {
+  --       sorter = 'case_sensitive',
+  --     },
+  --     view = {
+  --       width = 30,
+  --     },
+  --     renderer = {
+  --       group_empty = true,
+  --     },
+  --     filters = {
+  --       dotfiles = true,
+  --     },
+  --   },
+  -- },
 
   -- NOTE: Plugins can also be added by using a table,
   -- with the first argument being the link and the following
@@ -370,6 +401,7 @@ require('lazy').setup({
       vim.keymap.set('n', '<leader>sk', builtin.keymaps, { desc = '[S]earch [K]eymaps' })
       vim.keymap.set('n', '<leader>sf', builtin.find_files, { desc = '[S]earch [F]iles' })
       vim.keymap.set('n', '<leader>ss', builtin.builtin, { desc = '[S]earch [S]elect Telescope' })
+      vim.keymap.set('n', '<leader>sG', builtin.git_files, { desc = '[S]earch [G]it' })
       vim.keymap.set('n', '<leader>sw', builtin.grep_string, { desc = '[S]earch current [W]ord' })
       vim.keymap.set('n', '<leader>sg', builtin.live_grep, { desc = '[S]earch by [G]rep' })
       vim.keymap.set('n', '<leader>sd', builtin.diagnostics, { desc = '[S]earch [D]iagnostics' })
@@ -538,6 +570,7 @@ require('lazy').setup({
       --  - settings (table): Override the default settings passed when initializing the server.
       --        For example, to see the options for `lua_ls`, you could go to: https://luals.github.io/wiki/settings/
       local servers = {
+        tsserver = {},
         -- clangd = {},
         -- gopls = {},
         -- pyright = {},
@@ -581,7 +614,9 @@ require('lazy').setup({
       vim.list_extend(ensure_installed, {
         'stylua', -- Used to format Lua code
       })
-      require('mason-tool-installer').setup { ensure_installed = ensure_installed }
+      require('mason-tool-installer').setup {
+        ensure_installed = { ensure_installed, 'eslint-lsp', 'typescript-language-server', 'tailwindcss-language-server', 'prettierd' },
+      }
 
       require('mason-lspconfig').setup {
         handlers = {
@@ -739,7 +774,6 @@ require('lazy').setup({
       }
     end,
   },
-
   { -- You can easily change to a different colorscheme.
     -- Change the name of the colorscheme plugin below, and then
     -- change the command in the config to whatever the name of that colorscheme is.
@@ -798,6 +832,7 @@ require('lazy').setup({
       --  Check out: https://github.com/echasnovski/mini.nvim
     end,
   },
+
   { -- Highlight, edit, and navigate code
     'nvim-treesitter/nvim-treesitter',
     build = ':TSUpdate',
