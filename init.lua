@@ -233,31 +233,41 @@ require('lazy').setup({
   'mbbill/undotree',
   'tpope/vim-fugitive',
   {
+    'iamcco/markdown-preview.nvim',
+    cmd = { 'MarkdownPreviewToggle', 'MarkdownPreview', 'MarkdownPreviewStop' },
+    ft = { 'markdown' },
+    build = function()
+      vim.fn['mkdp#util#install']()
+    end,
+  },
+  -- 'hrsh7th/nvim-cmp',
+  -- 'hrsh7th/cmp-buffer',
+  {
     'windwp/nvim-ts-autotag',
     ft = { 'javascript', 'javascriptreact', 'typescript', 'typescriptreact', 'html' },
     config = function()
       require('nvim-ts-autotag').setup()
     end,
   },
-  -- 'nvimtools/none-ls.nvim',
-  -- event = 'VeryLazy'
-  -- {
-  --   'nvim-tree/nvim-tree.luanvim-tree/nvim-tree',
-  --   opts = {
-  --     sort = {
-  --       sorter = 'case_sensitive',
-  --     },
-  --     view = {
-  --       width = 30,
-  --     },
-  --     renderer = {
-  --       group_empty = true,
-  --     },
-  --     filters = {
-  --       dotfiles = true,
-  --     },
-  --   },
-  -- },
+  'nvimtools/none-ls.nvim',
+  event = 'VeryLazy',
+  {
+    'nvim-tree/nvim-tree.lua',
+    opts = {
+      sort = {
+        sorter = 'case_sensitive',
+      },
+      view = {
+        width = 30,
+      },
+      renderer = {
+        group_empty = true,
+      },
+      filters = {
+        dotfiles = true,
+      },
+    },
+  },
 
   -- NOTE: Plugins can also be added by using a table,
   -- with the first argument being the link and the following
@@ -441,7 +451,23 @@ require('lazy').setup({
       'williamboman/mason.nvim',
       'williamboman/mason-lspconfig.nvim',
       'WhoIsSethDaniel/mason-tool-installer.nvim',
+      {
+        'akinsho/flutter-tools.nvim',
+        lazy = false,
+        dependencies = {
+          'nvim-lua/plenary.nvim',
+          'stevearc/dressing.nvim', -- optional for vim.ui.select
+        },
+        config = true,
+      },
 
+      'Nash0x7E2/awesome-flutter-snippets',
+
+      'dart-lang/dart-vim-plugin',
+      -- 'thosakwe/vim-flutter',
+      -- 'natebosch/vim-lsc',
+      -- 'natebosch/vim-lsc-dart',
+      --
       -- Useful status updates for LSP.
       -- NOTE: `opts = {}` is the same as calling `require('fidget').setup({})`
       { 'j-hui/fidget.nvim', opts = {} },
@@ -573,7 +599,7 @@ require('lazy').setup({
         tsserver = {},
         -- clangd = {},
         -- gopls = {},
-        -- pyright = {},
+        pyright = {},
         -- rust_analyzer = {},
         -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
         --
@@ -615,7 +641,7 @@ require('lazy').setup({
         'stylua', -- Used to format Lua code
       })
       require('mason-tool-installer').setup {
-        ensure_installed = { ensure_installed, 'eslint-lsp', 'typescript-language-server', 'tailwindcss-language-server', 'prettierd' },
+        ensure_installed = { ensure_installed, 'pyright', 'eslint-lsp', 'typescript-language-server', 'tailwindcss-language-server', 'prettierd' },
       }
 
       require('mason-lspconfig').setup {
@@ -713,6 +739,18 @@ require('lazy').setup({
       luasnip.config.setup {}
 
       cmp.setup {
+        source = {
+          name = 'buffers',
+          option = {
+            get_bufnrs = function()
+              local bufs = {}
+              for _, win in ipairs(vim.api.nvim_list_wins()) do
+                bufs[vim.api.nvim_win_get_buf(win)] = true
+              end
+              return vim.tbl_keys(bufs)
+            end,
+          },
+        },
         snippet = {
           expand = function(args)
             luasnip.lsp_expand(args.body)
